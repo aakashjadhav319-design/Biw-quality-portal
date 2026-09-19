@@ -548,7 +548,6 @@ if uploaded_file is not None:
     if uploaded_file is not None:
     # Reset file pointer to beginning of buffer
     uploaded_file.seek(0)
-    
     try:
         # Explicitly pass engine='openpyxl' for .xlsx files
         df = pd.read_excel(uploaded_file, engine='openpyxl')
