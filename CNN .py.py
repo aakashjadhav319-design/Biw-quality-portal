@@ -534,3 +534,50 @@ elif page == "📁 Historical Database Records":
     st.subheader("Master CMM Points to Station/Locator Mapping")
     df_map = load_data("master_mapping")
     st.dataframe(df_map, use_container_width=True)
+      import streamlit as st
+import pandas as pd
+import numpy as np
+
+st.title("CMM Inspection Report Analyzer")
+
+# File Uploader Widget
+uploaded_file = st.file_uploader("Upload CMM Excel File (.xlsx, .xls)", type=["xlsx", "xls"])
+
+if uploaded_file is not None:
+    # Read Excel sheet
+    df = pd.read_excel(uploaded_file)
+    
+    st.subheader("Raw CMM Data Preview")
+    st.dataframe(df.head())
+    
+    # Check for expected columns (customize these column names based on your CMM report format)
+    required_cols = ['Feature', 'Nominal', 'Actual', 'USL', 'LSL']
+    
+    if all(col in df.columns for col in required_cols):
+        # Calculate Deviation and Out-of-Tolerance status
+        df['Dev'] = df['Actual'] - df['Nominal']
+        df['Status'] = np.where(
+            (df['Actual'] > df['USL']) | (df['Actual'] < df['LSL']), 
+            'OUT OF TOLERANCE', 
+            'OK'
+        )
+        
+        # Summary Metrics
+        total_points = len(df)
+        out_of_spec = len(df[df['Status'] == 'OUT OF TOLERANCE'])
+        pass_rate = ((total_points - out_of_spec) / total_points) * 100
+        
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total Inspection Points", total_points)
+        col2.metric("Out of Tolerance Points", out_of_spec, delta_color="inverse")
+        col3.metric("Pass Rate", f"{pass_rate:.1f}%")
+        
+        # Display Out of Spec Features
+        if out_of_spec > 0:
+            st.warning(f"Found {out_of_spec} out-of-tolerance features:")
+            st.dataframe(df[df['Status'] == 'OUT OF TOLERANCE'][['Feature', 'Nominal', 'Actual', 'LSL', 'USL', 'Dev']])
+        else:
+            st.success("All inspection points are within specified tolerances!")
+            
+    else:
+        st.info("Uploaded sheet displayed. Ensure columns match: Feature, Nominal, Actual, USL, LSL for automated tolerance checking.")
