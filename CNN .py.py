@@ -547,8 +547,8 @@ if uploaded_file is not None:
     # Read Excel sheet
     if uploaded_file is not None:
     uploaded_file.seek(0)
-    
-    try:
+        
+        try:
         if uploaded_file.name.endswith('.xls'):
             df = pd.read_excel(uploaded_file, engine='xlrd')
         else:
