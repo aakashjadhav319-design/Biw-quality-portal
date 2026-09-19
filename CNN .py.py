@@ -546,20 +546,9 @@ uploaded_file = st.file_uploader("Upload CMM Excel File (.xlsx, .xls)", type=["x
 if uploaded_file is not None:
     # Read Excel sheet
     if uploaded_file is not None:
-    # Indented 4 spaces inside 'if'
-        
-        
-        
-        uploaded_file.seek(0)
-        
-        
-        
-        
-        
-        
-        
-        
-        try:
+    # Indented 4 spaces inside 
+        'if'uploaded_file.seek(0)
+            try:
         # Indented 8 spaces inside 'try'
         df = pd.read_excel(uploaded_file, engine='openpyxl')
     except Exception as e:
